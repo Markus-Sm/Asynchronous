@@ -345,47 +345,65 @@ GOOD LUCK 😀
 6. After the 2 seconds have passed, hide the current image.
 */
 
-let currentImage;
+// let currentImage;
 
-const createImage = function (imgPath) {
-    return new Promise((resolve, reject) => {
-        const img = document.createElement('img');
-        img.src = imgPath;
+// const createImage = function (imgPath) {
+//     return new Promise((resolve, reject) => {
+//         const img = document.createElement('img');
+//         img.src = imgPath;
 
-        img.addEventListener('load', () => {
-            document.querySelector('.images').appendChild(img);
-            resolve(img);
-        });
+//         img.addEventListener('load', () => {
+//             document.querySelector('.images').appendChild(img);
+//             resolve(img);
+//         });
 
-        img.addEventListener('error', () => {
-            reject(new Error(`Failed to load image from ${imgPath}`));
-        })
+//         img.addEventListener('error', () => {
+//             reject(new Error(`Failed to load image from ${imgPath}`));
+//         })
+//     });
+//   };
+
+// const wait = function (seconds){
+//   return new Promise(function (resolve){
+//       setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// createImage('./img/img-1.jpg')
+// .then(img => {
+//   console.log('First image loaded:', img);
+//   currentImage = img;
+//   return wait(2);
+// })
+// .then(() => {
+//   console.log('2 seconds have passed');
+//   currentImage.style.display = 'none';
+//   return createImage('./img/img-2.jpg');
+// })
+// .then(() => {
+//   console.log("Second image loaded:", img);
+//   return wait(2);
+// })
+// .then(() => {
+//   console.log('2 more seconds have passed');
+// })
+// .catch(err => console.error('Failed to load image:', err));
+
+const imgContainer = document.querySelector('.images');
+
+const createImage = function(imgPath){
+  return new Promise(function(resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+
+    img.addEventListener('load', function() {
+      imgContainer.append(img);
+      resolve(img);
     });
-  };
 
-const wait = function (seconds){
-  return new Promise(function (resolve){
-      setTimeout(resolve, seconds * 1000);
+    img.addEventListener('error', () => {
+      resolve(newError(`Failed to load img from ${imgPath}`));
+    });
   });
 };
 
-createImage('./img/img-1.jpg')
-.then(img => {
-  console.log('First image loaded:', img);
-  currentImage = img;
-  return wait(2);
-})
-.then(() => {
-  console.log('2 seconds have passed');
-  currentImage.style.display = 'none';
-  return createImage('./img/img-2.jpg');
-})
-.then(() => {
-  console.log("Second image loaded:", img);
-  return wait(2);
-})
-.then(() => {
-  console.log('2 more seconds have passed');
-  img.style.display = "none";
-})
-.catch(err => console.error('Failed to load image:', err));
