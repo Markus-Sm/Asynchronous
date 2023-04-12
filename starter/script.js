@@ -408,7 +408,7 @@ const createImage = function(imgPath){
     });
 
     img.addEventListener('error', () => {
-      resolve(newError(`Failed to load img from ${imgPath}`));
+      reject(newError(`Failed to load img from ${imgPath}`));
     });
   });
 };
@@ -428,6 +428,15 @@ createImage('./img/img-1.jpg')
 .then(img => {
   currentImg = img;
   console.log("Image 2 loaded");
+  return wait(3);
+})
+.then(() => {
+  currentImg.style.display = "none";
+  return createImage('./img/img-3.jpg');
+})
+.then((img) => {
+  currentImg = img;
+  console.log("Image 3 loaded");
   return wait(3);
 })
 .then(() => {
