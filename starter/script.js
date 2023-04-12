@@ -1,28 +1,28 @@
 'use strict';
 
-// const btn = document.querySelector('.btn-country');
-// const countriesContainer = document.querySelector('.countries');
+const btn = document.querySelector('.btn-country');
+const countriesContainer = document.querySelector('.countries');
 
 // ///////////////////////////////////////
 
-// const renderCountry = function (data, className = '') {
-//   const html = `
-//     <article class="country ${className}">
-//         <img class="country__img" src="${data.flag}" />
-//         <div class="country__data">
-//         <h3 class="country__name">${data.name}</h3>
-//         <h4 class="country__region">${data.region}</h4>
-//         <p class="country__row"><span>👫</span>${(
-//           +data.population / 1000000
-//         ).toFixed(1)}</p>
-//         <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-//         <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-//         </div>
-//     </article>
-//     `;
-//   countriesContainer.insertAdjacentHTML('beforeend', html);
-//   countriesContainer.style.opacity = 1;
-// };
+const renderCountry = function (data, className = '') {
+  const html = `
+    <article class="country ${className}">
+        <img class="country__img" src="${data.flag}" />
+        <div class="country__data">
+        <h3 class="country__name">${data.name}</h3>
+        <h4 class="country__region">${data.region}</h4>
+        <p class="country__row"><span>👫</span>${(
+          +data.population / 1000000
+        ).toFixed(1)}</p>
+        <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+        <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+        </div>
+    </article>
+    `;
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
+};
 
 // const renderError = function (msg) {
 //   countriesContainer.insertAdjacentText('beforeend', msg);
@@ -389,57 +389,86 @@ GOOD LUCK 😀
 // })
 // .catch(err => console.error('Failed to load image:', err));
 
-const imgContainer = document.querySelector('.images');
+// const imgContainer = document.querySelector('.images');
 
-const wait = function(seconds){
-  return new Promise(function(resolve) {
-    setTimeout(resolve, seconds * 1000);
+// const wait = function(seconds){
+//   return new Promise(function(resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// const createImage = function(imgPath){
+//   return new Promise(function(resolve, reject) {
+//     const img = document.createElement('img');
+//     img.src = imgPath;
+
+//     img.addEventListener('load', function() {
+//       imgContainer.append(img);
+//       resolve(img);
+//     });
+
+//     img.addEventListener('error', () => {
+//       reject(newError(`Failed to load img from ${imgPath}`));
+//     });
+//   });
+// };
+
+// let currentImg;
+
+// createImage('./img/img-1.jpg')
+// .then(img => {
+//   currentImg = img;
+//   console.log('Image 1 loaded');
+//   return wait(3)
+// })
+// .then(() => {
+//   currentImg.style.display = 'none';
+//   return createImage('./img/img-2.jpg');
+// })
+// .then(img => {
+//   currentImg = img;
+//   console.log("Image 2 loaded");
+//   return wait(3);
+// })
+// .then(() => {
+//   currentImg.style.display = "none";
+//   return createImage('./img/img-3.jpg');
+// })
+// .then((img) => {
+//   currentImg = img;
+//   console.log("Image 3 loaded");
+//   return wait(3);
+// })
+// .then(() => {
+//   currentImg.style.display = "none";
+// })
+// .catch(err => console.error(err));
+
+/////////////////////////////////////////////////////////////////////
+
+const getPosition = function(){
+  return new Promise(function(resolve, reject){
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-const createImage = function(imgPath){
-  return new Promise(function(resolve, reject) {
-    const img = document.createElement('img');
-    img.src = imgPath;
+const whereAmI = async function(){
+  // Geolocation
+  const pos = await getPosition();
+  const { latitude: lat, longitude: lng } = pos.coords;
 
-    img.addEventListener('load', function() {
-      imgContainer.append(img);
-      resolve(img);
-    });
+  // Reverse geocoding
+  const resGeo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+  const dataGeo = await resGeo.json();
+  console.log(dataGeo);
 
-    img.addEventListener('error', () => {
-      reject(newError(`Failed to load img from ${imgPath}`));
-    });
-  });
-};
+  // Country data
+  const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.countryName}`);
 
-let currentImg;
+  const data = await res.json();
+  console.log(data);
+  renderCountry(data[0])
+}
+whereAmI()
 
-createImage('./img/img-1.jpg')
-.then(img => {
-  currentImg = img;
-  console.log('Image 1 loaded');
-  return wait(3)
-})
-.then(() => {
-  currentImg.style.display = 'none';
-  return createImage('./img/img-2.jpg');
-})
-.then(img => {
-  currentImg = img;
-  console.log("Image 2 loaded");
-  return wait(3);
-})
-.then(() => {
-  currentImg.style.display = "none";
-  return createImage('./img/img-3.jpg');
-})
-.then((img) => {
-  currentImg = img;
-  console.log("Image 3 loaded");
-  return wait(3);
-})
-.then(() => {
-  currentImg.style.display = "none";
-})
-.catch(err => console.error(err));
+console.log("First");
