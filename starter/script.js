@@ -24,10 +24,10 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
-// const renderError = function (msg) {
-//   countriesContainer.insertAdjacentText('beforeend', msg);
-//   countriesContainer.style.opacity = 1;
-// };
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.style.opacity = 1;
+};
 
 // const getCountryDataAndNeighbour = function(country){
 
@@ -462,18 +462,21 @@ const whereAmI = async function(){
   const resGeo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
   const dataGeo = await resGeo.json();
   console.log(dataGeo);
+  if(!resGeo.ok) throw new Error('Helooo I am Error Errrror xd. Problem getting location data');
 
   // Country data
   const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.countryName}`);
+  if(!res.ok) throw new Error('Problem getting country');
 
   const data = await res.json();
   console.log(data);
-  renderCountry(data[0]);} catch(err){
-    console.error(err);
-    renderCountry(`Something went wrong ${err.meseage}`)
+  renderCountry(data[0]);
+  } catch(err){
+    console.error(`${err} 👎`);
+    renderError(`Something went wrong ${err.meseage}`)
   }
-}
-whereAmI()
+};
+whereAmI();
 
 console.log("First");
 
